@@ -40,7 +40,25 @@ Si ves una lista de películas, **¡FUNCIONA!**
 
 ---
 
-## 3. Estructura de Archivos
+## 3. Pruebas en la Nube (Render/Postman)
+
+Una vez que Render te dé tu link (ejemplo: `https://mi-app.onrender.com`), funciona igual que en local.
+
+**Para preguntar por recomendaciones en Postman:**
+
+1.  **Método**: `POST`
+2.  **URL**: `https://TU-LINK-DE-RENDER.onrender.com/recommend`
+3.  **Body** (JSON):
+    ```json
+    {
+      "title": "The Dark Knight",
+      "limit": 3
+    }
+    ```
+
+---
+
+## 4. Estructura de Archivos
 
 - `core/`: Cerebro del sistema (Matemáticas).
 - `backend/`: Servidor Web (API Flask).
