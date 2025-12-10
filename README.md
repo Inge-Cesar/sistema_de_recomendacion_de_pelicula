@@ -1,12 +1,20 @@
 # Sistema de Recomendación de Películas
 
-Este archivo es la **única guía** que necesitas. Aquí te explico cómo instalar, correr y verificar el proyecto.
+Este proyecto implementa un **Sistema de Recomendación de Películas** basado en contenido, utilizando técnicas de Machine Learning (TF-IDF y Similitud del Coseno) para sugerir películas similares en base a sus géneros y títulos.
 
-## 1. Instalación y Ejecución
+🔗 **URL de la API en Producción:**  
+`https://sistema-de-recomendacion-de-pelicula.onrender.com`
 
-Para usar el sistema en tu computadora:
+📂 **Repositorio en GitHub:**  
+`https://github.com/Inge-Cesar/sistema_de_recomendacion_de_pelicula.git`
 
-1.  **Instalar requisitos** (si no lo has hecho):
+---
+
+## 1. Instalación y Ejecución Local
+
+Si deseas correr el sistema en tu propia computadora:
+
+1.  **Instalar dependencias**:
     ```bash
     pip install -r requirements.txt
     ```
@@ -15,53 +23,72 @@ Para usar el sistema en tu computadora:
     ```bash
     python backend/app.py
     ```
-    *IMPORTANTE: La terminal se quedará "esperando". Eso significa que el servidor está encendido. No la cierres.*
+    *El servidor iniciará en http://127.0.0.1:5000*
 
 ---
 
-## 2. Verificar que funciona (Pruebas)
+## 2. Cómo Usar la API (Pruebas)
 
-Tienes dos formas de probarlo.
+Puedes probar la API tanto localmente como en la versión desplegada en Render.
 
-### Opción A: Prueba Automática (Recomendada)
-Abre **otra** terminal y ejecuta:
+### Endpoint: `/recommend`
+**Método**: `POST`  
+**Descripción**: Recibe el título de una película y devuelve recomendaciones similares.
 
-```bash
-python test_project.py
+#### Ejemplo de Solicitud (JSON):
+```json
+{
+  "title": "The Dark Knight",
+  "limit": 3
+}
 ```
 
-**Si ves un `OK` al final, todo está perfecto.** Esto prueba el modelo y la API automáticamente.
+#### Ejemplo de Respuesta:
+```json
+{
+    "movie": "The Dark Knight",
+    "recommendations": [
+        {
+            "genres": "Action|Adventure|Sci-Fi",
+            "similarity_score": 0.354,
+            "title": "Mad Max: Fury Road",
+            "year": 2015
+        },
+        ...
+    ]
+}
+```
 
-### Opción B: Prueba Manual
-Con el servidor encendido, abre tu navegador en:
-[http://127.0.0.1:5000/movies](http://127.0.0.1:5000/movies)
+### Probar con cURL:
+```bash
+curl -X POST https://sistema-de-recomendacion-de-pelicula.onrender.com/recommend \
+     -H "Content-Type: application/json" \
+     -d '{"title": "The Dark Knight", "limit": 3}'
+```
 
-Si ves una lista de películas, **¡FUNCIONA!**
+### Probar con Postman:
+1.  Crear una nueva petición `POST`.
+2.  URL: `https://sistema-de-recomendacion-de-pelicula.onrender.com/recommend`
+3.  Body -> Raw -> JSON.
+4.  Pegar el JSON de ejemplo y enviar.
 
 ---
 
-## 3. Pruebas en la Nube (Render/Postman)
+## 3. ¿Cómo funciona el Modelo?
 
-Una vez que Render te dé tu link (ejemplo: `https://mi-app.onrender.com`), funciona igual que en local.
+El "cerebro" del sistema se encuentra en `core/recommendation_engine.py`.
 
-**Para preguntar por recomendaciones en Postman:**
-
-1.  **Método**: `POST`
-2.  **URL**: `https://TU-LINK-DE-RENDER.onrender.com/recommend`
-3.  **Body** (JSON):
-    ```json
-    {
-      "title": "The Dark Knight",
-      "limit": 3
-    }
-    ```
+1.  **Datos**: Utiliza un dataset predefinido de películas con sus características (título, año, géneros).
+2.  **Preprocesamiento**: Combina el título y los géneros en una sola cadena de texto ("features").
+3.  **Vectorización (TF-IDF)**: Convierte el texto en vectores numéricos, dando menos peso a palabras comunes y más peso a palabras distintivas.
+4.  **Similitud del Coseno**: Calcula el ángulo entre los vectores de las películas. Películas con un ángulo menor (valor cercano a 1) son consideradas más similares.
 
 ---
 
-## 4. Estructura de Archivos
+## 4. Estructura del Proyecto
 
-- `core/`: Cerebro del sistema (Matemáticas).
-- `backend/`: Servidor Web (API Flask).
-- `requirements.txt`: Librerías necesarias.
-- `Procfile`: Para subir a la nube.
-- `test_project.py`: Script de prueba automático.
+- `core/`: Contiene la lógica de Machine Learning (`MovieRecommender`).
+- `backend/`: Servidor Web hecho con **Flask**.
+- `requirements.txt`: Lista de librerías necesarias.
+- `Procfile`: Archivo de configuración para el despliegue en Render.
+- `test_project.py`: Script para probar todo el flujo automáticamente.
